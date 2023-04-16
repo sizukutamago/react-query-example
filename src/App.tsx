@@ -1,49 +1,9 @@
-import logo from "./logo.svg";
-import "./App.css";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useGetTodos, usePostTodo } from "./hooks";
 
 function App() {
-  const getTodos = async (): Promise<
-    {
-      userId: string;
-      id: string;
-      title: string;
-      completed: boolean;
-    }[]
-  > => {
-    try {
-      const response = await fetch(
-        "https://jsonplaceholder.typicode.com/todos"
-      );
+  const query = useGetTodos();
 
-      return await response.json();
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  };
-
-  const postTodo = async ({ id, title }: { id: string; title: string }) => {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
-      method: "POST",
-      body: JSON.stringify({ title, userId: id }),
-    });
-
-    return await response.json();
-  };
-
-  const queryClient = useQueryClient();
-
-  const query = useQuery({ queryKey: ["todos"], queryFn: getTodos });
-
-  // Mutations
-  const mutation = useMutation({
-    mutationFn: postTodo,
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
-  });
+  const mutation = usePostTodo();
 
   return (
     <div>
